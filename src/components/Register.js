@@ -8,40 +8,40 @@ export default function Register() {
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const [role, setRole] = useState('')
-    const [serverErrors, setServerErrors ] = useState(null)
+    const [serverErrors, setServerErrors] = useState(null)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = {
             username: username,
             email: email,
-            password: password, 
+            password: password,
             role: role
         }
         // TODO - client side validation
-       try{
-        const response = await axios.post('http://localhost:3333/users/register', formData)
-        console.log(response.data)
-        navigate('/login')
-       }catch(err){
-        setServerErrors(err.response.data.errors)
-       } 
+        try {
+            const response = await axios.post('http://localhost:3333/users/register', formData)
+            console.log(response.data)
+            navigate('/login')
+        } catch (err) {
+            setServerErrors(err.response.data.errors)
+        }
     }
 
     return (
         <div>
             <h2>Register With us</h2>
 
-            { serverErrors && (
+            {serverErrors && (
                 <div>
                     <h3>These errors prohibited the form from being saved:</h3>
-                <ul>
-                    {serverErrors.map((ele, i)=>{
-                        return(
-                            <li key={i}>{ele.msg}</li>
-                        )
-                    })}
-                </ul>
+                    <ul>
+                        {serverErrors.map((ele, i) => {
+                            return (
+                                <li key={i}>{ele.msg}</li>
+                            )
+                        })}
+                    </ul>
                 </div>
             )}
 
@@ -86,19 +86,19 @@ export default function Register() {
                     checked={role === 'candidate'}
                     id="candidate"
                     name="role"
-                /> 
+                />
                 <label htmlFor="candidate">Candidate</label>
                 <input
                     type="radio"
                     value='recruiter'
                     onChange={(e) => {
                         setRole(e.target.value)
-                    }} 
+                    }}
                     checked={role === 'recruiter'}
                     id="recruiter"
                     name="role"
-                /> 
-                <label htmlFor="recruiter">Recruiter</label> 
+                />
+                <label htmlFor="recruiter">Recruiter</label>
                 <br />
                 <input type="submit" />
             </form>

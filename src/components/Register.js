@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import validator from "validator"
 
 export default function Register() {
     const navigate = useNavigate()
@@ -11,7 +12,7 @@ export default function Register() {
     const [serverErrors, setServerErrors] = useState(null)
 
     // create a state variable
-    const [clientErrors, setClientErrors] = useState(null)
+    const [clientErrors, setClientErrors] = useState({})
     //create a local variable
     const errors = {}
 
@@ -22,6 +23,8 @@ export default function Register() {
 
         if (email.trim().length === 0) {
             errors.email = 'email is required'
+        } else if (!validator.isEmail(email)) {
+            errors.email = 'email should be in a valid format'
         }
 
         if (password.trim().length === 0) {
@@ -35,9 +38,9 @@ export default function Register() {
         }
     }
 
-
     const handleSubmit = async (e) => {
         e.preventDefault()
+
         const formData = {
             username: username,
             email: email,
@@ -50,7 +53,6 @@ export default function Register() {
         if (Object.keys(errors).length === 0) {
             try {
                 const response = await axios.post('http://localhost:3333/users/register', formData)
-                console.log(response.data)
                 navigate('/login')
             } catch (err) {
                 setServerErrors(err.response.data.errors)
@@ -58,9 +60,17 @@ export default function Register() {
         } else {
             setClientErrors(errors)
         }
+    }
 
-
-
+    const handleCheckEmail = async () => {
+        if (validator.isEmail(email)) {
+            const response = await axios.get(`http://localhost:3333/users/checkemail?email=${email}`)
+            if (response.data.is_email_registered) {
+                setClientErrors({ email: 'email is already registered' })
+            } else {
+                setClientErrors({})
+            }
+        }
     }
 
     return (
@@ -90,7 +100,7 @@ export default function Register() {
                     }}
                     id="username"
                 />
-                {clientErrors && clientErrors.username && <span>{clientErrors.username}</span>}
+                {clientErrors.username && <span>{clientErrors.username}</span>}
                 <br />
                 <label htmlFor="email">Enter Email</label> <br />
                 <input
@@ -99,9 +109,10 @@ export default function Register() {
                     onChange={(e) => {
                         setEmail(e.target.value)
                     }}
+                    onBlur={handleCheckEmail}
                     id="email"
                 />
-                {clientErrors && clientErrors.email && <span>{clientErrors.email}</span>}
+                {clientErrors.email && <span>{clientErrors.email}</span>}
 
                 <br />
                 <label htmlFor="password">Enter Password</label> <br />
@@ -113,7 +124,7 @@ export default function Register() {
                     }}
                     id="password"
                 />
-                {clientErrors && clientErrors.password && <span>{clientErrors.password}</span>}
+                {clientErrors.password && <span>{clientErrors.password}</span>}
 
                 <br />
                 <label htmlFor="">Select Role</label> <br />
@@ -139,7 +150,7 @@ export default function Register() {
                     name="role"
                 />
                 <label htmlFor="recruiter">Recruiter</label> {' '}
-                {clientErrors && clientErrors.role && <span>{clientErrors.role}</span>}
+                {clientErrors.role && <span>{clientErrors.role}</span>}
 
                 <br />
                 <input type="submit" />

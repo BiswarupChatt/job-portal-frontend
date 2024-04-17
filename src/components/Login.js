@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import validator from "validator"
 import axios from "axios"
 import _ from 'lodash'
 
@@ -8,22 +9,43 @@ export default function Login() {
     const [form, setForm] = useState({
         email: '',
         password: '',
-        serverErrors: null
+        serverErrors: null,
+        clientErrors: {}
     })
+    const errors = {}
+
+    const runValidation = () => {
+        if (form.email.trim().length === 0) {
+            errors.email = 'email is required'
+        } else if (!validator.isEmail(form.email)) {
+            errors.email = 'email should be in a valid format'
+        }
+        if (form.password.trim().length === 0) {
+            errors.password = 'password is required'
+        } else if (form.password.trim().length < 8 || form.password.trim().length > 128) {
+            errors.password = 'password should be between 8 to 128 characters'
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = _.pick(form, ['email', 'password'])
-        //todo client side validation
 
-        try {
-            const response = await axios.post('http://localhost:3333/users/login', formData)
-            localStorage.setItem('token', response.data.token)
-            navigate('/')
-        } catch (err) {
-            setForm({ ...form, serverErrors: err.response.data.errors })
+        runValidation()
+
+        if (Object.keys(errors).length === 0) {
+            try {
+                const response = await axios.post('http://localhost:3333/users/login', formData)
+                localStorage.setItem('token', response.data.token)
+                navigate('/')
+            } catch (err) {
+                setForm({ ...form, serverErrors: err.response.data.errors, clientErrors: {} })
+            }
+        } else {
+            setForm({ ...form, clientErrors: errors })
         }
     }
+
     const displayErrors = () => {
         if (typeof form.serverErrors == 'string') {
             return (
@@ -59,6 +81,7 @@ export default function Login() {
                     }}
                     id="email"
                 />
+                {form.clientErrors.email && <span>{form.clientErrors.email}</span>}
                 <br />
                 <label htmlFor="password">Enter Password</label> <br />
                 <input
@@ -68,7 +91,9 @@ export default function Login() {
                         setForm({ ...form, password: e.target.value })
                     }}
                     id="password"
-                /> <br /> <br />
+                />
+                {form.clientErrors.password && <span>{form.clientErrors.password}</span>}
+                <br /> <br />
                 <input type="submit" />
             </form>
         </div>

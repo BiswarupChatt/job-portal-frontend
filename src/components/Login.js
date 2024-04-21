@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom"
 import validator from "validator"
 import axios from "axios"
 import _ from 'lodash'
+import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
+    const {handleLogin} = useAuth()
     const navigate = useNavigate()
     const [form, setForm] = useState({
         email: '',
@@ -37,6 +39,12 @@ export default function Login() {
             try {
                 const response = await axios.post('http://localhost:3333/users/login', formData)
                 localStorage.setItem('token', response.data.token)
+                const userResponse = await axios.get('http://localhost:3333/users/account', {
+                    headers: {
+                        Authorization: localStorage.getItem('token')
+                    }
+                })
+                handleLogin(userResponse.data)
                 navigate('/')
             } catch (err) {
                 setForm({ ...form, serverErrors: err.response.data.errors, clientErrors: {} })

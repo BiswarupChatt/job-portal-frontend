@@ -4,7 +4,7 @@ export default function Home() {
     return (
         <div>
             <h2>Home Component</h2>
-            { user && <p>{user.username}</p>}
+            {!user? <p>user not logged in</p> : <p>Welcome {user.username}</p>}
         </div>
     )
 }

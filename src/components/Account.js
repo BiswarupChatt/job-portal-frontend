@@ -9,4 +9,4 @@ export default function Account() {
             <p>role - {user.role}</p>
         </div>
     )
-}
+} 

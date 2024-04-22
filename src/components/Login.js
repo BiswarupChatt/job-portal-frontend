@@ -28,7 +28,7 @@ export default function Login() {
             errors.password = 'password should be between 8 to 128 characters'
         }
     }
-
+ 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = _.pick(form, ['email', 'password'])

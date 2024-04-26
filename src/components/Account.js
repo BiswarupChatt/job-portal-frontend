@@ -6,9 +6,9 @@ export default function Account() {
             <h2>Account</h2>
             {user && (
                 <div>
-                <p>username - {user.username}</p>
-                <p>email - {user.email}</p>
-                <p>role - {user.role}</p>
+                <p>username - {user.account.username}</p>
+                <p>email - {user.account.email}</p>
+                <p>role - {user.account.role}</p>
             </div>
             )}
         </>

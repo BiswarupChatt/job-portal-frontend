@@ -6,7 +6,8 @@ import _ from 'lodash'
 import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
-    const {handleLogin} = useAuth()
+    // const {handleLogin} = useAuth()
+    const {dispatch} = useAuth()
     const navigate = useNavigate()
     const [form, setForm] = useState({
         email: '',
@@ -44,7 +45,8 @@ export default function Login() {
                         Authorization: localStorage.getItem('token')
                     }
                 })
-                handleLogin(userResponse.data)
+                // handleLogin(userResponse.data)
+                dispatch({type: "LOGIN" , payload: userResponse.data})
                 navigate('/')
             } catch (err) {
                 setForm({ ...form, serverErrors: err.response.data.errors, clientErrors: {} })

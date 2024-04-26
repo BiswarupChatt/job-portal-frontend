@@ -12,7 +12,22 @@ import ApplyJob from "./components/ApplyJob"
 import Unauthorized from "./components/Unauthorized"
 
 export default function App() {
-  const { user, handleLogin, handleLogout } = useAuth()
+  const { user, dispatch } = useAuth()
+
+  const conditionalLinks = (path, roles) => {
+    switch (path) {
+      case '/add-job': {
+        if (roles.includes(user.account.role)) {
+          return <Link to={path}>Add Job</Link>
+        }
+      }
+      case '/apply-job': {
+        if (roles.includes(user.account.role)) {
+          return <Link to={path}>Apply Job</Link>
+        }
+      }
+    }
+  }
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -22,7 +37,8 @@ export default function App() {
             Authorization: localStorage.getItem('token')
           }
         })
-        handleLogin(response.data)
+        // handleLogin(response.data)
+        dispatch({ type: 'LOGIN', payload: response.data })
       })()
     }
   }, [])
@@ -33,7 +49,7 @@ export default function App() {
     <div>
       <h2>Job Portal</h2>
       <Link to='/'>Home</Link> |
-      {!user ? (
+      {!user.isLoggedIn ? (
         <>
           <Link to='/register'>Register</Link> |
           <Link to='/login'>Login</Link>
@@ -42,12 +58,13 @@ export default function App() {
         <>
           <Link to='/account'>Account</Link> |
 
-          {user.role === 'recruiter' && <Link to="/add-job">Add New Job</Link>}|
-          {user.role === 'candidate' && <Link to="/apply-job">Apply for Job</Link>}|
+          {conditionalLinks('/add-job', ['admin', 'recruiter'])} | 
+          {conditionalLinks('/apply-job', ['admin', 'candidate'])}
 
           <Link to='/' onClick={() => {
             localStorage.removeItem('token')
-            handleLogout()
+            // handleLogout()
+            dispatch({ type: "LOGOUT" })
           }}>Logout</Link>
         </>
       )}
@@ -71,7 +88,7 @@ export default function App() {
             <ApplyJob />
           </PrivateRoute>
         } />
-        <Route path="/unauthorized" element={<Unauthorized/>}/>
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
     </div>
 

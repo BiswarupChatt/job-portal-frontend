@@ -4,10 +4,11 @@ import validator from "validator"
 import axios from "axios"
 import _ from 'lodash'
 import { useAuth } from "../context/AuthContext"
+import { Link } from "react-router-dom"
 
 export default function Login() {
     // const {handleLogin} = useAuth()
-    const {dispatch} = useAuth()
+    const { dispatch } = useAuth()
     const navigate = useNavigate()
     const [form, setForm] = useState({
         email: '',
@@ -29,7 +30,7 @@ export default function Login() {
             errors.password = 'password should be between 8 to 128 characters'
         }
     }
- 
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData = _.pick(form, ['email', 'password'])
@@ -45,8 +46,21 @@ export default function Login() {
                         Authorization: localStorage.getItem('token')
                     }
                 })
+
+                let url
+                if (userResponse.data.role == 'candidate') {
+                    url = 'http://localhost:3333/api/candidate/profile'
+                } else {
+                    url = 'http://localhost:3333/api/recruiter/profile'
+                }
+
+                const profileResponse = await axios.get(url, {
+                    headers: {
+                        Authorization: localStorage.getItem('token')
+                    }
+                })
                 // handleLogin(userResponse.data)
-                dispatch({type: "LOGIN" , payload: userResponse.data})
+                dispatch({ type: "LOGIN", payload: {account: userResponse.data, profile: profileResponse.data} })
                 navigate('/')
             } catch (err) {
                 setForm({ ...form, serverErrors: err.response.data.errors, clientErrors: {} })
@@ -106,6 +120,7 @@ export default function Login() {
                 <br /> <br />
                 <input type="submit" />
             </form>
+            <Link to="/register">Create an account</Link>
         </div>
     )
 }

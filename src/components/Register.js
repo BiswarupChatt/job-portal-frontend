@@ -1,6 +1,6 @@
 import { useState } from "react"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import validator from "validator"
 
 export default function Register() {
@@ -155,7 +155,7 @@ export default function Register() {
                 <br />
                 <input type="submit" />
             </form>
-
+            <Link to="/login">Login</Link>
         </div>
     )
 }

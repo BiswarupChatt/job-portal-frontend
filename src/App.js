@@ -58,7 +58,7 @@ export default function App() {
         <>
           <Link to='/account'>Account</Link> |
 
-          {conditionalLinks('/add-job', ['admin', 'recruiter'])} | 
+          {conditionalLinks('/add-job', ['admin', 'recruiter'])} |
           {conditionalLinks('/apply-job', ['admin', 'candidate'])}
 
           <Link to='/' onClick={() => {

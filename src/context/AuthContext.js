@@ -9,13 +9,16 @@ export const useAuth = () => {
 const reducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN': {
-            return { ...state, isLoggedIn: true, account: action.payload }
+            return { ...state, isLoggedIn: true, account: action.payload.account, profile: action.payload.profile }
         }
         case "LOGOUT": {
             return { ...state, isLoggedIn: false, account: null, profile: null }
         }
+        case "SET_PROFILE":{
+            return{...state, profile: action.payload}
+        }
         default: {
-            return {...state}
+            return { ...state }
         }
     }
 }

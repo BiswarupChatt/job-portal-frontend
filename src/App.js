@@ -38,7 +38,7 @@ export default function App() {
           }
         })
         // handleLogin(response.data)
-        dispatch({ type: 'LOGIN', payload: response.data })
+        dispatch({ type: 'LOGIN', payload: {account: response.data} })
       })()
     }
   }, [])

@@ -16,7 +16,6 @@ export default function CandidateProfile() {
   
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(user.profile)
         if (user.profile) {
             //api to update
             const response = await axios.put("http://localhost:3333/api/candidate/profile", form, {

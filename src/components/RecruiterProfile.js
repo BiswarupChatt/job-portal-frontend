@@ -4,7 +4,6 @@ import axios from "axios"
 
 export default function RecruiterProfile() {
     const { user, dispatch } = useAuth()
-    console.log(user)
 
     const [form, setForm] = useState({
         companyName: user.profile ? user.profile.companyName : "",
@@ -20,7 +19,24 @@ export default function RecruiterProfile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(user.profile)
+        
+        if(user.profile){
+            const response = await axios.put('http://localhost:3333/api/recruiter/profile', form, {
+                headers:{
+                    Authorization : localStorage.getItem('token')
+                }
+            })
+            alert('profile updated')
+            dispatch({type: "SET_PROFILE", payload: response.data})
+        }else{
+            const response = await axios.post('http://localhost:3333/api/recruiter/profile', form, {
+                headers:{
+                    Authorization : localStorage.getItem('token')
+                }
+            })
+            alert('profile created')
+            dispatch({type: "SET_PROFILE", payload: response.data})
+        }
     }
 
     return (

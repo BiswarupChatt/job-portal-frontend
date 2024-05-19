@@ -1,4 +1,4 @@
-import { Route, Routes, Link } from "react-router-dom"
+import { Route, Routes, Link, Navigate } from "react-router-dom"
 import { useEffect } from "react"
 import axios from "axios"
 import Home from "./components/Home"
@@ -7,6 +7,8 @@ import Register from "./components/Register"
 import Account from "./components/Account"
 import { useAuth } from "./context/AuthContext"
 import PrivateRoute from "./components/PrivateRoute"
+import RedirectedToHome from "./components/RedirectedToHome"
+import NotFound from "./components/NotFound"
 import AddJob from "./components/AddJob"
 import ApplyJob from "./components/ApplyJob"
 import Unauthorized from "./components/Unauthorized"
@@ -37,8 +39,22 @@ export default function App() {
             Authorization: localStorage.getItem('token')
           }
         })
+
+        let url
+        if (response.data.role == 'candidate') {
+          url = 'http://localhost:3333/api/candidate/profile'
+        } else {
+          url = 'http://localhost:3333/api/recruiter/profile'
+        }
+
+        const profileResponse = await axios.get(url, {
+          headers: {
+            Authorization: localStorage.getItem('token')
+          }
+        })
+
         // handleLogin(response.data)
-        dispatch({ type: 'LOGIN', payload: {account: response.data} })
+        dispatch({ type: 'LOGIN', payload: { account: response.data, profile: profileResponse.data } })
       })()
     }
   }, [])
@@ -71,8 +87,16 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+        <Route path='/login' element={
+          <RedirectedToHome>
+            <Login />
+          </RedirectedToHome>
+        } />
+        <Route path='/register' element={
+          <RedirectedToHome>
+            <Register />
+          </RedirectedToHome>
+        } />
         <Route path="/account" element={
           <PrivateRoute permittedRoles={['recruiter', 'candidate']}>
             <Account />
@@ -89,6 +113,7 @@ export default function App() {
           </PrivateRoute>
         } />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path = "*" element={<NotFound/>}/>
       </Routes>
     </div>
 

@@ -17,31 +17,36 @@ export default function RecruiterProfile() {
         setForm({ ...form, [name]: value })
     }
 
+    const handleToggle = () => {
+        setForm({...form, isEdit: !form.isEdit})
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
-        
-        if(user.profile){
+
+        if (user.profile) {
             const response = await axios.put('http://localhost:3333/api/recruiter/profile', form, {
-                headers:{
-                    Authorization : localStorage.getItem('token')
+                headers: {
+                    Authorization: localStorage.getItem('token')
                 }
             })
             alert('profile updated')
-            dispatch({type: "SET_PROFILE", payload: response.data})
-        }else{
+            dispatch({ type: "SET_PROFILE", payload: response.data })
+        } else {
             const response = await axios.post('http://localhost:3333/api/recruiter/profile', form, {
-                headers:{
-                    Authorization : localStorage.getItem('token')
+                headers: {
+                    Authorization: localStorage.getItem('token')
                 }
             })
             alert('profile created')
-            dispatch({type: "SET_PROFILE", payload: response.data})
+            dispatch({ type: "SET_PROFILE", payload: response.data })
         }
     }
 
     return (
         <>
             <h2>Recruiter Profile</h2>
+            <button onClick={handleToggle}>{form.isEdit ? 'Cancel' : 'Edit'}</button>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="companyName">Company Name</label> <br />
                 <input
@@ -50,7 +55,7 @@ export default function RecruiterProfile() {
                     onChange={handleChange}
                     id="companyName"
                     name="companyName"
-                // disabled={!form.isEdit}
+                    disabled={!form.isEdit}
                 />
                 <br />
                 <label htmlFor="website">Website</label> <br />
@@ -60,7 +65,7 @@ export default function RecruiterProfile() {
                     onChange={handleChange}
                     id="website"
                     name="website"
-                // disabled={!form.isEdit}
+                disabled={!form.isEdit}
                 />
                 <br />
                 <label htmlFor="address">Address</label> <br />
@@ -70,11 +75,11 @@ export default function RecruiterProfile() {
                     onChange={handleChange}
                     id="address"
                     name="address"
-                // disabled={!form.isEdit}
+                disabled={!form.isEdit}
                 />
                 <br />
                 <br />
-                <input type="submit" />
+                { form.isEdit && <input type="submit" />}
             </form>
         </>
     )

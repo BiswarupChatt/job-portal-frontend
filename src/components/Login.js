@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import validator from "validator"
-import axios from "axios"
+import axios from '../config/Axios'
 import _ from 'lodash'
 import { useAuth } from "../context/AuthContext"
 import { Link } from "react-router-dom"
@@ -39,9 +39,9 @@ export default function Login() {
 
         if (Object.keys(errors).length === 0) {
             try {
-                const response = await axios.post('http://localhost:3333/users/login', formData)
+                const response = await axios.post('/users/login', formData)
                 localStorage.setItem('token', response.data.token)
-                const userResponse = await axios.get('http://localhost:3333/users/account', {
+                const userResponse = await axios.get('/users/account', {
                     headers: {
                         Authorization: localStorage.getItem('token')
                     }
@@ -49,9 +49,9 @@ export default function Login() {
 
                 let url
                 if (userResponse.data.role == 'candidate') {
-                    url = 'http://localhost:3333/api/candidate/profile'
+                    url = '/api/candidate/profile'
                 } else {
-                    url = 'http://localhost:3333/api/recruiter/profile'
+                    url = '/api/recruiter/profile'
                 }
 
                 const profileResponse = await axios.get(url, {
